@@ -6,24 +6,57 @@ def solicitude_string(message):
                 raise ValueError("El texto no puede estar vacío.")
             return valor
         except ValueError as e:
-                # Imprime el mensaje de error y el bucle vuelve a pedir la entrada
+                # Print the error message and the loop asks for input again
                 print(f"Error: {e}. Inténtelo de nuevo.")
         except KeyboardInterrupt:
             print("\nEntrada cancelada por el usuario.")
-            return None
-
+            return "__CANCEL__"
+        
 def solicitude_float(message):
     while True:
         try:
-            return float(input(message))
+            entrada = input(message).strip()
+
+            # If the user does not enter anything or enters "None"
+            if entrada == "" or entrada.lower() == "none":
+                return None
+            
+            # Try to convert to float
+            value = float(entrada)
+            if value < 0:
+                print("El número debe ser mayor o igual a 0.\n")
+                continue
+            return value # The value is returned only if it is a number and greater than 0
+
         except ValueError:
-            print("Ingresó valor inválido, intente de nuevo.\n")
+            print("Valor inválido. Debe ingresar un número o dejar vacío.\n")
         except KeyboardInterrupt:
             print("\nEntrada cancelada por el usuario.")
-            return None
+            return "__CANCEL__"
+        
+def solicitude_integer(message):
+    while True:
+        try:
+            entrada = input(message).strip()
+
+            if entrada == "" or entrada.lower() == "none":
+                return None
+            
+            # Try to convert to integer
+            value = int(entrada)
+            if value < 0:
+                print("El número debe ser mayor o igual a 0.\n")
+                continue
+            return value # The value is returned only if it is a number and greater than 0
+
+        except ValueError:
+            print("Valor inválido. Debe ingresar un número o dejar vacío.\n")
+        except KeyboardInterrupt:
+            print("\nEntrada cancelada por el usuario.")
+            return "__CANCEL__"
         
 def add_inventory(dictionary,item1, item2, item3):
-    dictionary.append({"name_product" : item1, "price" : item2, "stock" : item3})
+    dictionary.append({"name_product" : item1, "unitary_price" : item2, "stock" : item3})
     print(f"Se agregó correctamente: {dictionary[-1]}")
 
 def show_inventory(dictionary):
@@ -33,10 +66,10 @@ def show_inventory(dictionary):
         for i,item in enumerate(dictionary):
             print(f"|Producto #{i+1}|Nombre:{item["name_product"]}|Precio:{item["unitary_price"]}|Cantidad:{item["stock"]}")
 
-def search_inventory(itemionary,search):
+def search_inventory(dictionary,search):
     selected_product = None
     product_index= 0
-    for j, inv in enumerate(itemionary):
+    for j, inv in enumerate(dictionary):
         if inv["name_product"] == search:
             selected_product = inv
             product_index = j
@@ -45,12 +78,12 @@ def search_inventory(itemionary,search):
         print("El producto no está registrado en la base de datos")
         return None
     else:
-        print(f"El usuario se encuentra en la posición {j+1} de la base de datos \n")
-        return inv[j]
+        print(f"El usuario se encuentra en la posición {product_index+1} de la base de datos \n")
+        return selected_product
 
 def update_inventory(dictionary,search, name, new_price=None, new_stock=None):
     
-    search["price"] = new_price
+    search["unitary_price"] = new_price
     search["stock"] = new_stock
     print(f"Se actualizó correctamente: {search}")
 
@@ -59,33 +92,32 @@ def delete_inventory(dictionary,item1):
         if inv["name_product"] == item1:
             selected_product = inv
             product_index = j
-    dictionary.remove(j)
-    print(f"Se eliminó correctamente el producto {dictionary["name_product"]}")
+    dictionary.pop(product_index)
+    print(f"Se eliminó correctamente el producto {selected_product["name_product"]}")
 
-def calculate_stadistics(dictionary,item1, item2, item3):
-    #**Estadísticas del inventario:**
+def calculate_stadistics(dictionary):
+    #**Inventory statistics:**
     total_units = 0.0
     total_value = 0.0
     subtotal = 0.0
-    #most_expensive_product
-    #max_stock_product 
     for item in dictionary:
 
-        if (item["price"]!= None) and (item["stock"]!= None):
+        if (item["unitary_price"]!= None) and (item["stock"]!= None):
 
             total_units += item["stock"]
-            subtotal= (lambda p: p["stock"] * p["price"])
-            print(f"Nombre del Producto:{item["name_product"]}|Precio:{item["unitary_price"]}|Cantidad:{item["stock"]}|subtotal:{subtotal}")
-            total_value += subtotal
+            subtotal= (lambda p: p["stock"] * p["unitary_price"])
+            print(f"Nombre del Producto:{item["name_product"]}|Precio:{item["unitary_price"]}|Cantidad:{item["stock"]}|subtotal:{subtotal(item)}")
+            total_value += subtotal(item)
         else:
             print(f"Nombre del Producto:{item["name_product"]}|Precio:{item["unitary_price"]}|Cantidad:{item["stock"]}|subtotal:None")
-    # # print(f"unidades Totales: {total_units}")
-    # # print(f"Valor total del inventario: {total_value}")
-    most_expensive_product_key = max(dictionary, key= lambda item: item["price"])
-    most_expensive_product_value= dictionary[most_expensive_product_key]
-    # # print(f"El producto {most_expensive_product_key} posee el mayor precio con un total de:$ {most_expensive_product_value}")
+
+    most_expensive_product_key = max(dictionary, key= lambda item: item["unitary_price"])
+    name_expensive= most_expensive_product_key['name_product']
+    price_expensive= most_expensive_product_key['unitary_price']
+ 
     max_stock_product_key = max(dictionary, key= lambda item: item["stock"])
-    max_stock_product_value= dictionary[max_stock_product_key]
-    # # print(f"El producto {max_stock_product_key} posee el mayor precio con un total de: {max_stock_product_value} unidades")
-    metrics_tuple = (total_units, total_value, most_expensive_product_key, most_expensive_product_value, max_stock_product_key, max_stock_product_value)
+    name_max_stock = max_stock_product_key['name_product']
+    max_stock = max_stock_product_key['stock']
+
+    metrics_tuple = (total_units, total_value, name_expensive, price_expensive, name_max_stock, max_stock)
     return metrics_tuple

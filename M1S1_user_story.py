@@ -35,7 +35,7 @@ try: # Attempt to execute code that may raise an error
     1 para agregar un producto
     2 para calcular unidades totales
     3 para calcular costo total
-    4 para salir: \n""")) #Option Menu
+    4 para salir: \n""")) #Option Menu with 4 possible options
 
         if option==1: #Enter if that condition is met
 
@@ -48,7 +48,7 @@ try: # Attempt to execute code that may raise an error
                     price = float(input("ingrese el precio: ")) # # product price request 
                 except ValueError: # Handle invalid numeric input
                     print("Debe ingresar un número válido")
-                    continue # return to the beginning of the while loop
+                    continue # return to the beginning of the while loop if price isn't number
                 if price >= 0: # Check if the value is greater than or equal to zero
                     product_price.append(price)
                     break # exit of the while loop
@@ -60,7 +60,8 @@ try: # Attempt to execute code that may raise an error
                     quant = int(input(f"ingrese la cantidad en unidades del producto: ")) # request for product quantities
                 except ValueError: 
                     print("Debe ingresar un número válido")
-                    continue
+                    continue #the cycle starts again to request a value
+
                 # Check that the value entered is greater than 0
                 if quant >= 0: # If it is correct, add it to the list
                     quantity.append(quant) 
@@ -70,7 +71,7 @@ try: # Attempt to execute code that may raise an error
                 
                 
         elif option ==2:
-            for i in range(len(quantity)):
+            for i in range(len(quantity)): #It is guaranteed that the entire list will be traversed by setting the size of the list.
                 total_units = total_units + quantity[i] # An accumulator is used to add each of the elements in a list
             print(f"Unidades en total: {total_units}") # the total costs are printed
 
@@ -110,9 +111,14 @@ try: # Attempt to execute code that may raise an error
             break
         else:
             print("Ingresó valor inválido")
-except KeyboardInterrupt: #
+except KeyboardInterrupt: #If the user interrupts the code with a key combination, the exception is handled correctly.
     print("\nSe interrumpió el programa con Ctrl+C")
 
 ##general comment##
 
 #When the program starts, the variables and lists are declared and initialized.
+#If the user interrupts the code with a key combination, the exception is handled correctly.
+#The code has a menu with four available options (1-4). If you enter a different value, 
+#you will be asked to re-enter a value within the range. Option 1 allows you to add a product, 
+#option 2 calculates total units, option 3 calculates total cost (There is another submenu that 
+# asks if you want to see the unit cost of each product) and option 4 is for exiting.
